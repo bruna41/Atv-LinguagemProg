@@ -21,8 +21,9 @@ class Level:
         self.timeout = TIMEOUT_LEVEL
         self.window = window
         self.name = name
+        if self.name == 'Level3':
+            self.timeout = TIMEOUT_LEVEL*2
         self.game_mode = game_mode
-        self.timeout_counter = 0
         self.entity_list: list[Entity] = []
         self.entity_list.extend(EntityFactory.get_entity(self.name + 'Bg'))
         player = EntityFactory.get_entity('Player1')
@@ -58,24 +59,17 @@ class Level:
                     pygame.quit()
                     sys.exit()
                 if event.type == EVENT_ENEMY:
-                    if self.name != 'Level3':
-                        choice = random.choice(('Enemy1', 'Enemy2'))
-                        self.entity_list.append(EntityFactory.get_entity(choice))
-                    else:
-                        self.entity_list.append(EntityFactory.get_entity('Enemy3'))
+                    choice = random.choice(('Enemy1', 'Enemy2'))
+                    self.entity_list.append(EntityFactory.get_entity(choice))
                 if event.type == EVENT_TIMEOUT:
-                    if self.name == 'Level3' and self.timeout_counter == 0:
-                        pygame.time.set_timer(EVENT_TIMEOUT, TIMEOUT_STEP)
-                        self.timeout_counter = 1
-                    else:
-                        self.timeout -= TIMEOUT_STEP
-                        if self.timeout == 0:
-                            for ent in self.entity_list:
-                                if isinstance(ent, Player) and ent.name == 'Player1':
-                                    player_score[0] = ent.score
-                                if isinstance(ent, Player) and ent.name == 'Player2':
-                                    player_score[1] = ent.score
-                            return True
+                    self.timeout -= TIMEOUT_STEP
+                    if self.timeout == 0:
+                        for ent in self.entity_list:
+                            if isinstance(ent, Player) and ent.name == 'Player1':
+                                player_score[0] = ent.score
+                            if isinstance(ent, Player) and ent.name == 'Player2':
+                                player_score[1] = ent.score
+                        return True
 
                 found_player = False
                 for ent in self.entity_list:
